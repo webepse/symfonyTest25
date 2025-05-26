@@ -46,6 +46,11 @@ class ProductControllerTest extends WebTestCase
         parent::tearDown();
     }
 
+    /**
+     * vérifie si la page show s'affiche et que la structure est correcte
+     * @return void
+     *
+     */
     public function testProductPageDisplaysCorrectly(): void
     {
         // on utilise le client (créé dans setUp())
@@ -55,6 +60,39 @@ class ProductControllerTest extends WebTestCase
         $this->assertSelectorTextContains('h1','Test Product');
         $this->assertSelectorTextContains('p','Test description');
         $this->assertSelectorTextContains('.product-price','42.5€');
+    }
+
+    /**
+     * test si je peux obtenir une page 404 avec un faux id
+     * @return void
+     */
+    public function testProductNotFoundReturns404(): void
+    {
+        $this->client->request('GET', '/product/99999'); // ID supposé inexistant
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testSubmitNewProductForm(): void
+    {
+        $crawler = $this->client->request('GET', '/product/new');
+        $this->assertResponseIsSuccessful();
+
+        $form = $crawler->selectButton('Ajouter')->form([
+            "product_form[name]" => "Test Product formulaire",
+            "product_form[description]" => "Produit ajouté via test",
+            'product_form[price]' => 19.99,
+            "product_form[date]" => (new \DateTime())->format('Y-m-d'),
+        ]);
+
+        $this->client->submit($form);
+
+        // redirection après succès
+        $this->assertResponseRedirects();
+
+        // suivre la redirection pour voir la page d'arrivée
+        $this->client->followRedirect();
+
+        $this->assertSelectorTextContains('h1','Les produits');
     }
 
 }
