@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3 mt-3">
+                <h1>{{ product.name }}</h1>
+                <h5>{{ product.date | date('d/m/Y') }}</h5>
+                <p>{{ product.description | raw }}</p>
+                <div class="product-price">Price: {{ product.price }}€</div>
+                <a href="{{ path('app_product') }}" class="btn btn-secondary my-3">Retour</a>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
